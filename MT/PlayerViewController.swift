@@ -14,6 +14,8 @@ class PlayerViewController: AVPlayerViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.player = nil
+//        let l = LessonsTableViewController()
+//        l.tableView.reloadData()
     }
     
     override func viewDidLoad() {

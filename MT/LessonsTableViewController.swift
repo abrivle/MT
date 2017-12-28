@@ -21,6 +21,8 @@ class LessonsTableViewController: UITableViewController, LessonCellDelegate {
     let documentsDirectoryURL =  FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
     var tempFileName = ""
     var tempURL: URL?
+    var rowNumber: Int?
+    var isLessonLoading = false
     
     let playerViewController = PlayerViewController()
     
@@ -65,12 +67,21 @@ class LessonsTableViewController: UITableViewController, LessonCellDelegate {
     }
     
     func didTapNext(_ tag: Int, completionHandler: @escaping () -> ()) {
-        
-        guard let url = URL(string: lessons[tag]) else { return }
+        rowNumber = tag
+        guard isLessonLoading == false
+            else {
+                let alert = UIAlertController(title: "Loading another lesson", message: "Wait until the download is complete", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "Lo siento!", style: .default, handler: nil))
+                alert.addAction(UIAlertAction(title: "I'm doing what I want!!1", style: .cancel, handler: nil))
+                alert.addAction(UIAlertAction(title: "Red Button", style: .destructive, handler: nil))
+                self.present(alert, animated: true, completion: nil)
+                completionHandler()
+                return
+        }
+        guard let url = URL(string: lessons[tag]) else { return completionHandler() }
         
         tempFileName = url.lastPathComponent
         tempURL = url
-        //let plvc = PlayerViewController()
         
         switch lessonsStatus[tag] {
         case "Available offline":
@@ -82,11 +93,9 @@ class LessonsTableViewController: UITableViewController, LessonCellDelegate {
             try? FileManager.default.removeItem(at: documentsDirectoryURL.appendingPathComponent("temp.mp3"))
             
             // Download new temp.mp3
-            downloadFile(from: url, fileName: "temp.mp3"){ [weak self] in
-                DispatchQueue.main.sync {
-                    self?.play(fileName: "temp.mp3", tag: tag)
-                    completionHandler()
-                }
+            downloadFile(from: url, fileName: "temp.mp3") { [weak self] in
+                self?.play(fileName: "temp.mp3", tag: tag)
+                completionHandler()
             }
         default:
             completionHandler()
@@ -109,18 +118,14 @@ class LessonsTableViewController: UITableViewController, LessonCellDelegate {
         
         switch lessonsStatus[tag] {
         case "Available offline":
-            
             setRemoveButton()
-            
         case "Available online":
             setSaveButton()
-            
         default:
             break
         }
         self.navigationController?.pushViewController(playerViewController, animated: true)
         player.play()
-        
     }
     
     func setRemoveButton() {
@@ -138,7 +143,8 @@ class LessonsTableViewController: UITableViewController, LessonCellDelegate {
     // For bar remove button action
     @objc func removeFile() {
         try? FileManager.default.removeItem(at: documentsDirectoryURL.appendingPathComponent(tempFileName))
-        //checkURLs()
+        checkURLs()
+        tableView.reloadRows(at: [IndexPath.init(row: rowNumber!, section: 0)], with: .automatic)
         setSaveButton()
     }
     
@@ -146,17 +152,19 @@ class LessonsTableViewController: UITableViewController, LessonCellDelegate {
     @objc func saveFile() {
         do {
             try FileManager.default.copyItem(at: documentsDirectoryURL.appendingPathComponent("temp.mp3"), to: documentsDirectoryURL.appendingPathComponent(tempFileName))
-            //checkURLs()
+            checkURLs()
+            tableView.reloadRows(at: [IndexPath.init(row: rowNumber!, section: 0)], with: .automatic)
             setRemoveButton()
         } catch {
             downloadFile(from: tempURL!, fileName: tempFileName) { [weak self] in
-                //self?.checkURLs()
+                self?.tableView.reloadRows(at: [IndexPath.init(row: (self?.rowNumber)!, section: 0)], with: .automatic)
                 self?.setRemoveButton()
             }
         }
     }
     
     func checkURLs() {
+        lessonsStatus = []
         for lesson in lessons {
             if let url = URL(string: lesson) {
                 let destinationUrl = documentsDirectoryURL.appendingPathComponent(url.lastPathComponent)
@@ -181,16 +189,20 @@ class LessonsTableViewController: UITableViewController, LessonCellDelegate {
             completionHandler()
             // if the file doesn't exist
         } else {
-            
-            URLSession.shared.downloadTask(with: url) { (location, response, error) -> Void in
-                guard let location = location, error == nil else { return }
-                do {
-                    // Move file to destination URL after downloading
-                    try FileManager.default.moveItem(at: location, to: destinationURL)
-                    print("File moved to documents folder")
-                    completionHandler()
-                } catch let error as NSError {
-                    print(error.localizedDescription)
+            isLessonLoading = true
+            UIApplication.shared.isNetworkActivityIndicatorVisible = true
+            URLSession.shared.downloadTask(with: url) { (location, response, error) in
+                DispatchQueue.main.sync {
+                    guard let location = location, error == nil else { return }
+                    do {
+                        // Move file to destination URL after downloading
+                        try FileManager.default.moveItem(at: location, to: destinationURL)
+                    } catch {
+                        print(error)
+                        
+                    }
+                    self.isLessonLoading = false
+                    UIApplication.shared.isNetworkActivityIndicatorVisible = false
                     completionHandler()
                 }
                 }.resume()
