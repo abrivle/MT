@@ -22,6 +22,8 @@ class LessonsTableViewController: UITableViewController, LessonCellDelegate {
     var tempFileName = ""
     var tempURL: URL?
     
+    let playerViewController = PlayerViewController()
+    
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
 //        self.navigationController?.navigationBar.titleTextAttributes = [ NSAttributedStringKey.font: UIFont(name: "Brush Script MT", size: 16)!]
@@ -68,6 +70,7 @@ class LessonsTableViewController: UITableViewController, LessonCellDelegate {
         
         tempFileName = url.lastPathComponent
         tempURL = url
+        //let plvc = PlayerViewController()
         
         switch lessonsStatus[tag] {
         case "Available offline":
@@ -86,6 +89,7 @@ class LessonsTableViewController: UITableViewController, LessonCellDelegate {
                 }
             }
         default:
+            completionHandler()
             break
         }
         
@@ -95,7 +99,7 @@ class LessonsTableViewController: UITableViewController, LessonCellDelegate {
         let docURL = documentsDirectoryURL.appendingPathComponent(fileName)
         let player = AVPlayer(url: docURL)
         
-        let playerViewController = AVPlayerViewController()
+        
         playerViewController.player = player
         
         let backItem = UIBarButtonItem()
@@ -105,47 +109,49 @@ class LessonsTableViewController: UITableViewController, LessonCellDelegate {
         
         switch lessonsStatus[tag] {
         case "Available offline":
-            let downloadButton = UIBarButtonItem.init(image: #imageLiteral(resourceName: "DownloadImage"), style: .plain, target: self, action: #selector(removeFile))
-            downloadButton.tintColor = UIColor.green
-            playerViewController.navigationItem.rightBarButtonItem = downloadButton
+            
+            setRemoveButton()
             
         case "Available online":
-            let downloadButton = UIBarButtonItem(image: #imageLiteral(resourceName: "DownloadImage"), style: .plain, target: self, action: #selector(saveFile))
-            downloadButton.tintColor = Constants.buttonColor
-            playerViewController.navigationItem.rightBarButtonItem = downloadButton
+            setSaveButton()
             
         default:
             break
         }
         self.navigationController?.pushViewController(playerViewController, animated: true)
         player.play()
+        
     }
     
-    func setBarButton(tag: Int) {
-        
+    func setRemoveButton() {
+        let downloadButton = UIBarButtonItem(image: #imageLiteral(resourceName: "RemoveIcon"), style: .plain, target: self, action: #selector(removeFile))
+        downloadButton.tintColor = Constants.buttonColor
+        playerViewController.navigationItem.rightBarButtonItem = downloadButton
+    }
+    
+    func setSaveButton() {
+        let downloadButton = UIBarButtonItem(image: #imageLiteral(resourceName: "SaveIcon"), style: .plain, target: self, action: #selector(saveFile))
+        downloadButton.tintColor = Constants.buttonColor
+        playerViewController.navigationItem.rightBarButtonItem = downloadButton
     }
     
     // For bar remove button action
     @objc func removeFile() {
         try? FileManager.default.removeItem(at: documentsDirectoryURL.appendingPathComponent(tempFileName))
-        let alert = UIAlertController.init(title: "Lesson removed", message: nil, preferredStyle: .alert)
-        alert.addAction(UIAlertAction.init(title: "OK", style: .default, handler: nil))
-        self.present(alert, animated: true, completion: nil)
-        
+        //checkURLs()
+        setSaveButton()
     }
     
     // For bar save button action
     @objc func saveFile() {
-        let alert = UIAlertController.init(title: "Lesson saved", message: nil, preferredStyle: .alert)
-        alert.addAction(UIAlertAction.init(title: "OK", style: .default, handler: nil))
         do {
             try FileManager.default.copyItem(at: documentsDirectoryURL.appendingPathComponent("temp.mp3"), to: documentsDirectoryURL.appendingPathComponent(tempFileName))
-            self.present(alert, animated: true, completion: nil)
-            
+            //checkURLs()
+            setRemoveButton()
         } catch {
             downloadFile(from: tempURL!, fileName: tempFileName) { [weak self] in
-                self?.present(alert, animated: true, completion: nil)
-                
+                //self?.checkURLs()
+                self?.setRemoveButton()
             }
         }
     }
@@ -176,7 +182,6 @@ class LessonsTableViewController: UITableViewController, LessonCellDelegate {
             // if the file doesn't exist
         } else {
             
-            // Use NSURLSession.sharedSession to download the data asynchronously
             URLSession.shared.downloadTask(with: url) { (location, response, error) -> Void in
                 guard let location = location, error == nil else { return }
                 do {

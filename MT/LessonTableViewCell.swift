@@ -18,15 +18,19 @@ class LessonTableViewCell: UITableViewCell {
     @IBOutlet weak var nextButton: RoundButton!
     
     @IBAction func nextButtonTapped(_ sender: RoundButton) {
+        let view = UIView(frame: lessonImage.bounds)
+        view.backgroundColor = UIColor.black
+        view.alpha = 0.5
+        lessonImage.addSubview(view)
         
-        let activityInd = UIActivityIndicatorView.init(activityIndicatorStyle: .gray)
+        let activityInd = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
         activityInd.center = lessonImage.center
         activityInd.hidesWhenStopped = true
         activityInd.startAnimating()
         lessonImage.addSubview(activityInd)
-        lessonImage.alpha = 0.5
-        delegate?.didTapNext(self.tag) { [weak self] in
-            self?.lessonImage.alpha = 1
+        
+        delegate?.didTapNext(self.tag) {
+            view.alpha = 0
             activityInd.stopAnimating()
         }
     }

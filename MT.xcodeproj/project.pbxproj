@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FC038AC21FF549100089E3A2 /* PlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC038AC11FF549100089E3A2 /* PlayerViewController.swift */; };
 		FC0694511FEFA4F200C3D626 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0694501FEFA4F200C3D626 /* CardView.swift */; };
 		FC0694591FEFD92400C3D626 /* brush-script-mt in Resources */ = {isa = PBXBuildFile; fileRef = FC0694581FEFD92400C3D626 /* brush-script-mt */; };
 		FC06945B1FEFE7E600C3D626 /* LessonsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC06945A1FEFE7E600C3D626 /* LessonsTableViewController.swift */; };
@@ -24,6 +25,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		FC038AC11FF549100089E3A2 /* PlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerViewController.swift; sourceTree = "<group>"; };
 		FC0694501FEFA4F200C3D626 /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 		FC0694581FEFD92400C3D626 /* brush-script-mt */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "brush-script-mt"; sourceTree = "<group>"; };
 		FC06945A1FEFE7E600C3D626 /* LessonsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LessonsTableViewController.swift; sourceTree = "<group>"; };
@@ -80,6 +82,7 @@
 				FC75A3DA1FEEE33800C6E011 /* CourseTableViewCell.swift */,
 				FC06945A1FEFE7E600C3D626 /* LessonsTableViewController.swift */,
 				FC06945C1FEFE91300C3D626 /* LessonTableViewCell.swift */,
+				FC038AC11FF549100089E3A2 /* PlayerViewController.swift */,
 				FC75A3D61FEE204200C6E011 /* RoundButton.swift */,
 				FC0694501FEFA4F200C3D626 /* CardView.swift */,
 				FC75A3C31FED8F6A00C6E011 /* Main.storyboard */,
@@ -168,6 +171,7 @@
 				FC75A3D71FEE204200C6E011 /* RoundButton.swift in Sources */,
 				FC06945B1FEFE7E600C3D626 /* LessonsTableViewController.swift in Sources */,
 				FC75A3C81FED8F6A00C6E011 /* MT.xcdatamodeld in Sources */,
+				FC038AC21FF549100089E3A2 /* PlayerViewController.swift in Sources */,
 				FC75A3C01FED8F6A00C6E011 /* AppDelegate.swift in Sources */,
 				FC0694611FF043B500C3D626 /* Constants.swift in Sources */,
 				FC06945D1FEFE91300C3D626 /* LessonTableViewCell.swift in Sources */,
