@@ -125,18 +125,26 @@ class LessonsTableViewController: UITableViewController, LessonCellDelegate {
         
     }
     
-    // For bar button action
+    // For bar remove button action
     @objc func removeFile() {
         try? FileManager.default.removeItem(at: documentsDirectoryURL.appendingPathComponent(tempFileName))
+        let alert = UIAlertController.init(title: "Lesson removed", message: nil, preferredStyle: .alert)
+        alert.addAction(UIAlertAction.init(title: "OK", style: .default, handler: nil))
+        self.present(alert, animated: true, completion: nil)
         
     }
     
-    // For bar button action
+    // For bar save button action
     @objc func saveFile() {
+        let alert = UIAlertController.init(title: "Lesson saved", message: nil, preferredStyle: .alert)
+        alert.addAction(UIAlertAction.init(title: "OK", style: .default, handler: nil))
         do {
             try FileManager.default.copyItem(at: documentsDirectoryURL.appendingPathComponent("temp.mp3"), to: documentsDirectoryURL.appendingPathComponent(tempFileName))
+            self.present(alert, animated: true, completion: nil)
+            
         } catch {
-            downloadFile(from: tempURL!, fileName: tempFileName) {
+            downloadFile(from: tempURL!, fileName: tempFileName) { [weak self] in
+                self?.present(alert, animated: true, completion: nil)
                 
             }
         }
