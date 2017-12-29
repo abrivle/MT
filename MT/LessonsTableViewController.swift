@@ -70,7 +70,7 @@ class LessonsTableViewController: UITableViewController, LessonCellDelegate {
         rowNumber = tag
         guard isLessonLoading == false
             else {
-                let alert = UIAlertController(title: "Loading another lesson", message: "Wait until the download is complete", preferredStyle: .alert)
+                let alert = UIAlertController(title: "Loading lesson", message: "Wait until the download is complete", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "Lo siento!", style: .default, handler: nil))
                 alert.addAction(UIAlertAction(title: "I'm doing what I want!!1", style: .cancel, handler: nil))
                 alert.addAction(UIAlertAction(title: "Red Button", style: .destructive, handler: nil))
