@@ -16,22 +16,42 @@ class LessonTableViewCell: UITableViewCell {
     @IBOutlet weak var lessonTitle: UILabel!
     @IBOutlet weak var lessonStatus: UILabel!
     @IBOutlet weak var nextButton: RoundButton!
+    @IBOutlet weak var view: UIView!
+    @IBOutlet weak var downloadingLabel: UILabel!
+    @IBOutlet weak var downloadingIndicator: UIActivityIndicatorView!
+    
+    @IBOutlet weak var downloadingCancelButtonLabel: UILabel!
+    @IBOutlet weak var downloadingCancelButton: UIButton!
     
     @IBAction func nextButtonTapped(_ sender: RoundButton) {
-        let view = UIView(frame: lessonImage.bounds)
-        view.backgroundColor = UIColor.black
+        
+        // If view.alpha != 0 means a lesson is downloading
+        guard view.alpha == 0
+            else {
+                let color = downloadingLabel.textColor
+                downloadingLabel.textColor = UIColor.red
+                DispatchQueue.main.asyncAfter(deadline: (.now() + 0.5)) { [weak self] in
+                    self?.downloadingLabel.textColor = color
+                }
+                return
+        }
+        
         view.alpha = 0.5
         lessonImage.addSubview(view)
         
-        let activityInd = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
-        activityInd.center = lessonImage.center
-        activityInd.hidesWhenStopped = true
-        activityInd.startAnimating()
-        lessonImage.addSubview(activityInd)
+        downloadingLabel.text = "Downloading..."
+        downloadingCancelButtonLabel.text = "Cancel"
+        downloadingCancelButton.isEnabled = true
         
-        delegate?.didTapNext(self.tag) {
-            view.alpha = 0
-            activityInd.stopAnimating()
+        delegate?.didTapNext(self.tag) { [weak self] in
+            self?.view.alpha = 0
+        }
+    }
+    
+    @IBAction func cancelButtonTapped(_ sender: Any) {
+        downloadingCancelButton.isEnabled = false
+        delegate?.didTapCancel(self.tag) { [weak self] in
+            self?.view.alpha = 0
         }
     }
     
@@ -41,6 +61,12 @@ class LessonTableViewCell: UITableViewCell {
         let shape = CAShapeLayer()
         shape.path = maskPath.cgPath
         lessonImage.layer.mask = shape
+    }
+    
+    // When we scroll Table View, activity indicator stops animation without overriding this func
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        downloadingIndicator.startAnimating()
     }
     
     override func awakeFromNib() {
@@ -54,9 +80,9 @@ class LessonTableViewCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
-    
 }
 
 protocol LessonCellDelegate {
     func didTapNext(_ tag: Int, completionHandler: @escaping () -> ())
+    func didTapCancel(_ tag: Int, completionHandler: @escaping () -> ())
 }

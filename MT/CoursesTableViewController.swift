@@ -84,29 +84,5 @@ class CoursesTableViewController: UITableViewController, CourseCellDelegate {
         }
         self.navigationController?.pushViewController(vc, animated: true)
     }
-        
-//    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        guard let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "lessonsTVC") as? LessonsTableViewController else {
-//            print("Couldn't instantiate View Controller with identifier WallTVC")
-//            return
-//        }
-//        //        vc.rowNumber = rowNumber
-//        //        vc.post = posts[rowNumber]
-//        //        vc.profiles = profiles
-//        //        vc.groups = groups
-//        //        vc.title = "Post"
-//
-//        self.navigationController?.pushViewController(vc, animated: true)
-//    }
-    
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
+      
 }

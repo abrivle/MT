@@ -23,7 +23,7 @@ struct Constants {
     */
     static let coursesDict = ["Intro course": ["",
                                            "http://muzmo.ru/get/music/20160726/muzmo_ru_Rick_Astley_-_Never_Gonna_Give_You_Up_36383490.mp3",
-                                           "http://store.naitimp3.ru/download/676165/RDl0YXdWanNUU0t2TTQ5dDM2QTYwYnAwdXE2Q1FYNjhhb1dWR3VjcmpNWFBMdGQ3cC92Y3pYRjBjakp0cEFyL1ZDUFpBYVRhRFU3T0xjSG5RRlBpQ0lVTVQrbFBDUnZ5TDZ4ajM5dEhMWjg9/rick_astley_never_gonna_give_you_up_(NaitiMP3.ru).mp3",
+                                           "",
                                            ""],
                          "Second course": ["",
                                            "",

@@ -9,13 +9,14 @@
 import UIKit
 import AVKit
 import AVFoundation
-import CoreData
 
 class LessonsTableViewController: UITableViewController, LessonCellDelegate {
     
     var courseTitle = ""
     var lessons = [""]
     var lessonsStatus = [String]()
+    
+    var task: URLSessionDownloadTask?
     
     // Create destination file url
     let documentsDirectoryURL =  FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
@@ -36,6 +37,12 @@ class LessonsTableViewController: UITableViewController, LessonCellDelegate {
         self.title = courseTitle
         lessons.remove(at: 0)
         checkURLs()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        task?.cancel()
+        UIApplication.shared.isNetworkActivityIndicatorVisible = false
     }
     
     override func didReceiveMemoryWarning() {
@@ -68,21 +75,30 @@ class LessonsTableViewController: UITableViewController, LessonCellDelegate {
     
     func didTapNext(_ tag: Int, completionHandler: @escaping () -> ()) {
         rowNumber = tag
+        
+        // If during the download of one lesson, clicking on the download of another lesson will be shown Aleret Controller
         guard isLessonLoading == false
             else {
                 let alert = UIAlertController(title: "Loading lesson", message: "Wait until the download is complete", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "Lo siento!", style: .default, handler: nil))
-                alert.addAction(UIAlertAction(title: "I'm doing what I want!!1", style: .cancel, handler: nil))
-                alert.addAction(UIAlertAction(title: "Red Button", style: .destructive, handler: nil))
+                alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
                 self.present(alert, animated: true, completion: nil)
                 completionHandler()
                 return
         }
-        guard let url = URL(string: lessons[tag]) else { return completionHandler() }
+        
+        guard let url = URL(string: lessons[tag])
+            else {
+                let alert = UIAlertController(title: "Wrong URL", message: nil, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
+                self.present(alert, animated: true, completion: nil)
+                completionHandler()
+                return
+        }
         
         tempFileName = url.lastPathComponent
         tempURL = url
         
+        // Check Lesson Status
         switch lessonsStatus[tag] {
         case "Available offline":
             play(fileName: url.lastPathComponent, tag: tag)
@@ -104,18 +120,27 @@ class LessonsTableViewController: UITableViewController, LessonCellDelegate {
         
     }
     
+    func didTapCancel(_ tag: Int, completionHandler: @escaping () -> ()) {
+        task!.cancel()
+        isLessonLoading = false
+        UIApplication.shared.isNetworkActivityIndicatorVisible = false
+        completionHandler()
+    }
+    
     func play(fileName: String, tag: Int) {
         let docURL = documentsDirectoryURL.appendingPathComponent(fileName)
         let player = AVPlayer(url: docURL)
         
+//        let nav = UINavigationController()
+//        nav.viewControllers = [playerViewController]
         
         playerViewController.player = player
-        
         let backItem = UIBarButtonItem()
         backItem.title = ""
         navigationItem.backBarButtonItem = backItem
         playerViewController.title = "Lesson №\(tag + 1)"
         
+        // Set Right Bar Button
         switch lessonsStatus[tag] {
         case "Available offline":
             setRemoveButton()
@@ -124,6 +149,7 @@ class LessonsTableViewController: UITableViewController, LessonCellDelegate {
         default:
             break
         }
+        //self.present(nav, animated: true, completion: nil)
         self.navigationController?.pushViewController(playerViewController, animated: true)
         player.play()
     }
@@ -181,6 +207,16 @@ class LessonsTableViewController: UITableViewController, LessonCellDelegate {
     }
     
     func downloadFile(from url: URL, fileName: String, completionHandler: @escaping () -> ()) {
+        
+        // Checking internet connection
+        guard Reachability.isConnectedToNetwork() else {
+            let alert = UIAlertController(title: "No internet connection", message: "An internet connection is required to download the lesson. You can save lesson to device after downloading for offline access", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+            completionHandler()
+            return
+        }
+        
         let destinationURL = documentsDirectoryURL.appendingPathComponent(fileName)
         
         // Check if it exists before downloading
@@ -191,21 +227,22 @@ class LessonsTableViewController: UITableViewController, LessonCellDelegate {
         } else {
             isLessonLoading = true
             UIApplication.shared.isNetworkActivityIndicatorVisible = true
-            URLSession.shared.downloadTask(with: url) { (location, response, error) in
+            task = URLSession.shared.downloadTask(with: url) { (location, response, error) in
                 DispatchQueue.main.sync {
                     guard let location = location, error == nil else { return }
                     do {
                         // Move file to destination URL after downloading
                         try FileManager.default.moveItem(at: location, to: destinationURL)
                     } catch {
-                        print(error)
+                        print("--- Error: \(error)")
                         
                     }
                     self.isLessonLoading = false
                     UIApplication.shared.isNetworkActivityIndicatorVisible = false
                     completionHandler()
                 }
-                }.resume()
+                }
+            task!.resume()
         }
         
     }

@@ -22,6 +22,7 @@
 		FC75A3D71FEE204200C6E011 /* RoundButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC75A3D61FEE204200C6E011 /* RoundButton.swift */; };
 		FC75A3D91FEEE30B00C6E011 /* CoursesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC75A3D81FEEE30B00C6E011 /* CoursesTableViewController.swift */; };
 		FC75A3DB1FEEE33800C6E011 /* CourseTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC75A3DA1FEEE33800C6E011 /* CourseTableViewCell.swift */; };
+		FCFD7F0220123AFB00210E58 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCFD7F0120123AFB00210E58 /* Reachability.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -42,6 +43,7 @@
 		FC75A3D61FEE204200C6E011 /* RoundButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundButton.swift; sourceTree = "<group>"; };
 		FC75A3D81FEEE30B00C6E011 /* CoursesTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoursesTableViewController.swift; sourceTree = "<group>"; };
 		FC75A3DA1FEEE33800C6E011 /* CourseTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourseTableViewCell.swift; sourceTree = "<group>"; };
+		FCFD7F0120123AFB00210E58 /* Reachability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,6 +87,7 @@
 				FC038AC11FF549100089E3A2 /* PlayerViewController.swift */,
 				FC75A3D61FEE204200C6E011 /* RoundButton.swift */,
 				FC0694501FEFA4F200C3D626 /* CardView.swift */,
+				FCFD7F0120123AFB00210E58 /* Reachability.swift */,
 				FC75A3C31FED8F6A00C6E011 /* Main.storyboard */,
 				FC06945E1FF02C4F00C3D626 /* Assets.xcassets */,
 				FC75A3CB1FED8F6A00C6E011 /* LaunchScreen.storyboard */,
@@ -169,6 +172,7 @@
 			files = (
 				FC0694511FEFA4F200C3D626 /* CardView.swift in Sources */,
 				FC75A3D71FEE204200C6E011 /* RoundButton.swift in Sources */,
+				FCFD7F0220123AFB00210E58 /* Reachability.swift in Sources */,
 				FC06945B1FEFE7E600C3D626 /* LessonsTableViewController.swift in Sources */,
 				FC75A3C81FED8F6A00C6E011 /* MT.xcdatamodeld in Sources */,
 				FC038AC21FF549100089E3A2 /* PlayerViewController.swift in Sources */,
