@@ -24,6 +24,11 @@ class HelloViewController: UIViewController {
         
     }
     
+    @IBAction func nextButtonTapped(_ sender: Any) {
+        UserDefaults.standard.set(true, forKey: "sawHelloVC")
+        
+    }
+    
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
     }

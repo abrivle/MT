@@ -28,10 +28,9 @@ class LessonTableViewCell: UITableViewCell {
         // If view.alpha != 0 means a lesson is downloading
         guard view.alpha == 0
             else {
-                let color = downloadingLabel.textColor
                 downloadingLabel.textColor = UIColor.red
-                DispatchQueue.main.asyncAfter(deadline: (.now() + 0.5)) { [weak self] in
-                    self?.downloadingLabel.textColor = color
+                DispatchQueue.main.asyncAfter(deadline: (.now() + 0.3)) { [weak self] in
+                    self?.downloadingLabel.textColor = UIColor.white
                 }
                 return
         }

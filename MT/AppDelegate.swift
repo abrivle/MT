@@ -16,7 +16,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        
+        let rootViewcController = storyboard.instantiateViewController(withIdentifier: UserDefaults.standard.bool(forKey: "sawHelloVC") ? "navCon" : "helloVC")
+        
+        window?.rootViewController = rootViewcController
+        
         return true
     }
 
