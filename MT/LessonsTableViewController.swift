@@ -20,11 +20,11 @@ class LessonsTableViewController: UITableViewController, LessonCellDelegate {
     var task: URLSessionDownloadTask?
     
     // Create destination file url
-    let documentsDirectoryURL =  FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-    var tempFileName = ""
-    var rowNumber: Int?
+    private let documentsDirectoryURL =  FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+    private var tempFileName = ""
+    private var rowNumber: Int?
     
-    let playerViewController = PlayerViewController()
+    private let playerViewController = PlayerViewController()
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
@@ -117,20 +117,20 @@ class LessonsTableViewController: UITableViewController, LessonCellDelegate {
         player.play()
     }
     
-    func setRemoveButton() {
+    private func setRemoveButton() {
         let downloadButton = UIBarButtonItem(image: #imageLiteral(resourceName: "RemoveIcon"), style: .plain, target: self, action: #selector(removeFile))
         downloadButton.tintColor = Constants.buttonColor
         playerViewController.navigationItem.rightBarButtonItem = downloadButton
     }
     
-    func setSaveButton() {
+    private func setSaveButton() {
         let downloadButton = UIBarButtonItem(image: #imageLiteral(resourceName: "SaveIcon"), style: .plain, target: self, action: #selector(saveFile))
         downloadButton.tintColor = Constants.buttonColor
         playerViewController.navigationItem.rightBarButtonItem = downloadButton
     }
     
     // For bar remove button action
-    @objc func removeFile() {
+    @objc private func removeFile() {
         try? FileManager.default.removeItem(at: documentsDirectoryURL.appendingPathComponent(tempFileName))
         checkURLs()
         tableView.reloadRows(at: [IndexPath(row: rowNumber!, section: 0)], with: .automatic)
@@ -138,7 +138,7 @@ class LessonsTableViewController: UITableViewController, LessonCellDelegate {
     }
     
     // For bar save button action
-    @objc func saveFile() {
+    @objc private func saveFile() {
         do {
             try FileManager.default.copyItem(at: documentsDirectoryURL.appendingPathComponent("temp.mp3"), to: documentsDirectoryURL.appendingPathComponent(tempFileName))
             checkURLs()
@@ -149,7 +149,7 @@ class LessonsTableViewController: UITableViewController, LessonCellDelegate {
         }
     }
     
-    func checkURLs() {
+    private func checkURLs() {
         lessonsStatus = []
         for lesson in lessons {
             if let url = URL(string: lesson) {

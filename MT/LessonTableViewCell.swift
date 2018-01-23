@@ -28,7 +28,7 @@ class LessonTableViewCell: UITableViewCell, URLSessionDownloadDelegate {
     var lessonUrl = ""
     
     // Create destination file url
-    let documentsDirectoryURL =  FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+    private let documentsDirectoryURL =  FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
     
     @IBAction func nextButtonTapped(_ sender: RoundButton) {
         
@@ -38,6 +38,8 @@ class LessonTableViewCell: UITableViewCell, URLSessionDownloadDelegate {
                 showAlert(title: "The lesson is already downloaded", message: "After downloading the lesson...")
                 return
         }
+        
+        roundCorners(view: view)
         
         view.alpha = 0.5
         downloadingLabel.text = "Downloading..."
@@ -102,31 +104,25 @@ class LessonTableViewCell: UITableViewCell, URLSessionDownloadDelegate {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        
-        // Round corners
-        let maskPath = UIBezierPath.init(roundedRect: lessonImage.bounds, byRoundingCorners: [.topLeft, .topRight], cornerRadii: CGSize.init(width: 5, height: 0))
-        let shape = CAShapeLayer()
-        shape.path = maskPath.cgPath
-        lessonImage.layer.mask = shape
-        lessonImage.clipsToBounds = true
-//        view.layer.mask = shape
+        roundCorners(view: lessonImage)
     }
     
     // When we scroll Table View, activity indicator stops animation without overriding this func
     override func prepareForReuse() {
         super.prepareForReuse()
         downloadingIndicator.startAnimating()
-        
+    }
+    
+    private func roundCorners(view: UIView) {
         // Round corners
         let maskPath = UIBezierPath.init(roundedRect: lessonImage.bounds, byRoundingCorners: [.topLeft, .topRight], cornerRadii: CGSize.init(width: 5, height: 0))
         let shape = CAShapeLayer()
         shape.path = maskPath.cgPath
-        lessonImage.layer.mask = shape
-        lessonImage.clipsToBounds = true
-//        view.layer.mask = shape
+        //        lessonImage.layer.mask = shape
+        view.layer.mask = shape
     }
     
-    func downloadFile(from url: URL, fileName: String) {
+    private func downloadFile(from url: URL, fileName: String) {
         
         // Checking internet connection
         guard Reachability.isConnectedToNetwork() else {
@@ -187,7 +183,7 @@ class LessonTableViewCell: UITableViewCell, URLSessionDownloadDelegate {
         }
     }
     
-    func showAlert(title: String?, message: String?) {
+    private func showAlert(title: String?, message: String?) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .actionSheet)
         alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
         delegateOfVC?.present(alert, animated: true, completion: nil)
