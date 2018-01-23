@@ -42,9 +42,10 @@ class LessonTableViewCell: UITableViewCell, URLSessionDownloadDelegate {
         roundCorners(view: view)
         
         view.alpha = 0.5
-        downloadingLabel.text = "Downloading..."
+        downloadingLabel.text = "Start download..."
         downloadingCancelButtonLabel.text = "Cancel"
         downloadingCancelButton.isEnabled = true
+        progressBar.isHidden = false
         
         // If during the download of one lesson, clicking on the download of another lesson will be shown Aleret Controller
         guard delegateOfVC?.isLessonLoading == false
@@ -114,11 +115,9 @@ class LessonTableViewCell: UITableViewCell, URLSessionDownloadDelegate {
     }
     
     private func roundCorners(view: UIView) {
-        // Round corners
-        let maskPath = UIBezierPath.init(roundedRect: lessonImage.bounds, byRoundingCorners: [.topLeft, .topRight], cornerRadii: CGSize.init(width: 5, height: 0))
+        let maskPath = UIBezierPath.init(roundedRect: view.bounds, byRoundingCorners: [.topLeft, .topRight], cornerRadii: CGSize.init(width: 5, height: 0))
         let shape = CAShapeLayer()
         shape.path = maskPath.cgPath
-        //        lessonImage.layer.mask = shape
         view.layer.mask = shape
     }
     
@@ -145,7 +144,6 @@ class LessonTableViewCell: UITableViewCell, URLSessionDownloadDelegate {
     // Download progress
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
         let progress = Float(totalBytesWritten)/Float(totalBytesExpectedToWrite)
-        print(progress)
         let totalBytes = Float(Int(Float(totalBytesExpectedToWrite)/(1024*1024)*10))/10
         DispatchQueue.main.async { [weak self] in
             self?.progressBar.progress = progress

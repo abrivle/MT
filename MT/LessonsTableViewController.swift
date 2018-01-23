@@ -66,6 +66,16 @@ class LessonsTableViewController: UITableViewController, LessonCellDelegate {
         cell.delegate = self
         cell.delegateOfVC = self
         
+        if rowNumber == indexPath.row {
+            cell.view.alpha = 0.5
+            cell.downloadingCancelButton.isEnabled = true
+            cell.progressBar.isHidden = false
+        } else {
+            cell.view.alpha = 0
+            cell.downloadingCancelButton.isEnabled = false
+            cell.progressBar.isHidden = true
+        }
+        
         cell.lessonTitle.text = "Lesson №\(indexPath.row + 1)"
         cell.lessonStatus.text = lessonsStatus[indexPath.row]
         cell.lessonUrl = lessons[indexPath.row]
