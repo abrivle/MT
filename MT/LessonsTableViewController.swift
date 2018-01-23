@@ -16,14 +16,13 @@ class LessonsTableViewController: UITableViewController, LessonCellDelegate {
     var lessons = [""]
     var lessonsStatus = [String]()
     
+    var isLessonLoading = false
     var task: URLSessionDownloadTask?
     
     // Create destination file url
     let documentsDirectoryURL =  FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
     var tempFileName = ""
-    var tempURL: URL?
     var rowNumber: Int?
-    var isLessonLoading = false
     
     let playerViewController = PlayerViewController()
     
@@ -62,12 +61,14 @@ class LessonsTableViewController: UITableViewController, LessonCellDelegate {
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "lessonCell", for: indexPath) as! LessonTableViewCell
-        let lessonStatus = lessonsStatus[indexPath.row]
         cell.nextButton.buttonCustomType = 1
         
         cell.delegate = self
+        cell.delegateOfVC = self
+        
         cell.lessonTitle.text = "Lesson №\(indexPath.row + 1)"
-        cell.lessonStatus.text = lessonStatus
+        cell.lessonStatus.text = lessonsStatus[indexPath.row]
+        cell.lessonUrl = lessons[indexPath.row]
         cell.tag = indexPath.row
         
         return cell
@@ -76,54 +77,16 @@ class LessonsTableViewController: UITableViewController, LessonCellDelegate {
     func didTapNext(_ tag: Int, completionHandler: @escaping () -> ()) {
         rowNumber = tag
         
-        // If during the download of one lesson, clicking on the download of another lesson will be shown Aleret Controller
-        guard isLessonLoading == false
-            else {
-                let alert = UIAlertController(title: "Loading lesson", message: "Wait until the download is complete", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
-                self.present(alert, animated: true, completion: nil)
-                completionHandler()
-                return
+        if let url = URL(string: lessons[tag]) {
+            tempFileName = url.lastPathComponent
         }
         
-        guard let url = URL(string: lessons[tag])
-            else {
-                let alert = UIAlertController(title: "Wrong URL", message: nil, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
-                self.present(alert, animated: true, completion: nil)
-                completionHandler()
-                return
-        }
-        
-        tempFileName = url.lastPathComponent
-        tempURL = url
-        
-        // Check Lesson Status
-        switch lessonsStatus[tag] {
-        case "Available offline":
-            play(fileName: url.lastPathComponent, tag: tag)
-            completionHandler()
-        case "Available online":
-            
-            // Remove old temp.mp3
-            try? FileManager.default.removeItem(at: documentsDirectoryURL.appendingPathComponent("temp.mp3"))
-            
-            // Download new temp.mp3
-            downloadFile(from: url, fileName: "temp.mp3") { [weak self] in
-                self?.play(fileName: "temp.mp3", tag: tag)
-                completionHandler()
-            }
-        default:
-            completionHandler()
-            break
-        }
-        
+        completionHandler()
     }
     
+    // Cancel downloading
     func didTapCancel(_ tag: Int, completionHandler: @escaping () -> ()) {
-        task!.cancel()
-        isLessonLoading = false
-        UIApplication.shared.isNetworkActivityIndicatorVisible = false
+        // Do something...
         completionHandler()
     }
     
@@ -170,7 +133,7 @@ class LessonsTableViewController: UITableViewController, LessonCellDelegate {
     @objc func removeFile() {
         try? FileManager.default.removeItem(at: documentsDirectoryURL.appendingPathComponent(tempFileName))
         checkURLs()
-        tableView.reloadRows(at: [IndexPath.init(row: rowNumber!, section: 0)], with: .automatic)
+        tableView.reloadRows(at: [IndexPath(row: rowNumber!, section: 0)], with: .automatic)
         setSaveButton()
     }
     
@@ -179,13 +142,10 @@ class LessonsTableViewController: UITableViewController, LessonCellDelegate {
         do {
             try FileManager.default.copyItem(at: documentsDirectoryURL.appendingPathComponent("temp.mp3"), to: documentsDirectoryURL.appendingPathComponent(tempFileName))
             checkURLs()
-            tableView.reloadRows(at: [IndexPath.init(row: rowNumber!, section: 0)], with: .automatic)
+            tableView.reloadRows(at: [IndexPath(row: rowNumber!, section: 0)], with: .automatic)
             setRemoveButton()
         } catch {
-            downloadFile(from: tempURL!, fileName: tempFileName) { [weak self] in
-                self?.tableView.reloadRows(at: [IndexPath.init(row: (self?.rowNumber)!, section: 0)], with: .automatic)
-                self?.setRemoveButton()
-            }
+            print(error)
         }
     }
     
@@ -205,46 +165,5 @@ class LessonsTableViewController: UITableViewController, LessonCellDelegate {
             }
         }
     }
-    
-    func downloadFile(from url: URL, fileName: String, completionHandler: @escaping () -> ()) {
-        
-        // Checking internet connection
-        guard Reachability.isConnectedToNetwork() else {
-            let alert = UIAlertController(title: "No internet connection", message: "An internet connection is required to download the lesson. You can save lesson to device after downloading for offline access", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
-            self.present(alert, animated: true, completion: nil)
-            completionHandler()
-            return
-        }
-        
-        let destinationURL = documentsDirectoryURL.appendingPathComponent(fileName)
-        
-        // Check if it exists before downloading
-        if FileManager.default.fileExists(atPath: destinationURL.path) {
-            print("The file already exists at path")
-            completionHandler()
-            // if the file doesn't exist
-        } else {
-            isLessonLoading = true
-            UIApplication.shared.isNetworkActivityIndicatorVisible = true
-            task = URLSession.shared.downloadTask(with: url) { (location, response, error) in
-                DispatchQueue.main.sync {
-                    guard let location = location, error == nil else { return }
-                    do {
-                        // Move file to destination URL after downloading
-                        try FileManager.default.moveItem(at: location, to: destinationURL)
-                    } catch {
-                        print("--- Error: \(error)")
-                        
-                    }
-                    self.isLessonLoading = false
-                    UIApplication.shared.isNetworkActivityIndicatorVisible = false
-                    completionHandler()
-                }
-                }
-            task!.resume()
-        }
-        
-    }
-    
+ 
 }

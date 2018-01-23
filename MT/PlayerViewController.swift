@@ -15,29 +15,24 @@ class PlayerViewController: AVPlayerViewController, UIViewControllerTransitionin
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        print("viewWillAppear")
         
         //self.view.bounds = (self.navigationController?.presentedViewController?.view.frame)!
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        print("viewDidAppear")
     }
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        print("viewWillLayoutSubviews")
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        print("viewDidLayoutSubviews")
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        //self.player = nil
         player?.pause()
    }
     
